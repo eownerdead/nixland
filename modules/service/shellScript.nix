@@ -9,11 +9,16 @@ in {
 
     writeShellApplication = with config.deps; {
       name = cfg.name;
-      text = with lib; ''
-        # ${cfg.description}
-
-        ${cfg.start}
-      '';
+      text = with lib;
+        ''
+          # ${cfg.description}
+        '' + lib.optionalString (cfg.env != null) (lib.concatStrings
+          (lib.mapAttrsToList (name: value: ''
+            ${lib.toShellVar name value}
+            export ${name}
+          '') cfg.env)) + ''
+            ${cfg.start}
+          '';
     };
   };
 }

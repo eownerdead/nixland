@@ -45,9 +45,6 @@
 
     deps = { nixpkgs, ... }: { inherit (nixpkgs) writeShellApplication; };
 
-    name = "land-nginx";
-    version = "unstable";
-
     package-func.result = lib.mkForce (config.deps.writeShellApplication
       (with config.writeShellApplication; {
         inherit name text runtimeInputs meta checkPhase excludeShellChecks;

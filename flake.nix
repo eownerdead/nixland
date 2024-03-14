@@ -14,22 +14,33 @@
       in rec {
         formatter = pkgs.nixfmt;
 
-        packages.nginx-example = dream2nix.lib.evalModules {
-          packageSets.nixpkgs = pkgs;
-          modules = [
-            ./modules/services/nginx.nix
-            {
-              services.nginx = {
-                configFile = ./nginx.conf;
-                stateDir = "/home/noobuser/src/nixland";
-              };
-            }
-          ];
+        packages = {
+          nginx-example = dream2nix.lib.evalModules {
+            packageSets.nixpkgs = pkgs;
+            modules = [
+              ./modules/services/nginx.nix
+              {
+                services.nginx = {
+                  configFile = ./nginx.conf;
+                  stateDir = "/home/noobuser/src/nixland";
+                };
+              }
+            ];
+          };
+          firefox = dream2nix.lib.evalModules {
+            packageSets.nixpkgs = pkgs;
+            modules = [
+              ./modules/services/firefox.nix
+              { services.firefox.stateDir = "/home/noobuser/src/nixland"; }
+            ];
+          };
         };
 
-        apps.nginx-example = {
-          type = "app";
-          program = "${packages.nginx-example}/bin/nginx";
+        apps = {
+          nginx-example = {
+            type = "app";
+            program = "${packages.nginx-example}/bin/nginx";
+          };
         };
 
         devShells.default = pkgs.mkShell {

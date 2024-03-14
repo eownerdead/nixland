@@ -5,6 +5,10 @@
       type = types.str;
       default = "";
     };
+    env = mkOption {
+      type = types.attrs;
+      default = { };
+    };
     start = mkOption {
       type = with types; nullOr str;
       default = null;
