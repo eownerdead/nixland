@@ -7,18 +7,19 @@ in {
     name = cfg.name;
     version = "unstable";
 
-    writeShellApplication = with config.deps; {
-      name = cfg.name;
-      text = with lib;
-        ''
-          # ${cfg.description}
-        '' + lib.optionalString (cfg.env != null) (lib.concatStrings
-          (lib.mapAttrsToList (name: value: ''
-            ${lib.toShellVar name value}
-            export ${name}
-          '') cfg.env)) + ''
-            ${cfg.start}
-          '';
-    };
+    writeShellApplication = lib.mkIf (cfg.backend == "shellscript")
+      (with config.deps; {
+        name = cfg.name;
+        text = with lib;
+          ''
+            # ${cfg.description}
+          '' + lib.optionalString (cfg.env != null) (lib.concatStrings
+            (lib.mapAttrsToList (name: value: ''
+              ${lib.toShellVar name value}
+              export ${name}
+            '') cfg.env)) + ''
+              ${cfg.start}
+            '';
+      });
   };
 }

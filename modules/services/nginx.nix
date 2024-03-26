@@ -4,7 +4,7 @@ in {
   imports = [
     dream2nix.modules.dream2nix.mkDerivation
     ../service/service.nix
-    ../service/shellScript.nix
+    ../service/oci.nix
   ];
 
   options.services.nginx = with lib; {

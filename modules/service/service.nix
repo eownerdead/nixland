@@ -5,6 +5,7 @@
       type = types.str;
       default = "";
     };
+    backend = mkOption { type = types.str; };
     env = mkOption {
       type = types.attrs;
       default = { };

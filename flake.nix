@@ -20,9 +20,10 @@
             modules = [
               ./modules/services/nginx.nix
               {
+                service.backend = "oci";
                 services.nginx = {
                   configFile = ./nginx.conf;
-                  stateDir = "/home/noobuser/src/nixland";
+                  stateDir = "/tmp";
                 };
               }
             ];
@@ -44,7 +45,7 @@
         };
 
         devShells.default = pkgs.mkShell {
-          packages = with pkgs; [ editorconfig-checker nixfmt ];
+          packages = with pkgs; [ editorconfig-checker nixfmt runc crun youki ];
         };
       });
 }
