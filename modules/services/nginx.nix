@@ -1,34 +1,42 @@
-{ config, lib, dream2nix, ... }:
-let cfg = config.services.nginx;
-in {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.services.nginx;
+in
+{
   imports = [
-    dream2nix.modules.dream2nix.mkDerivation
+    ../service/shellScript.nix
+    ../service/ociBundle.nix
     ../service/service.nix
-    ../service/oci.nix
+    # ../service/oci.nix
   ];
 
   options.services.nginx = with lib; {
-    stateDir = mkOption { type = with types; either path str; };
+    package = mkOption {
+      type = types.package;
+      default = pkgs.nginx;
+    };
     configFile = mkOption {
       type = with types; either path str;
       description = "The nginx configuration file.";
     };
   };
 
-  config = {
-    deps = { nixpkgs, ... }: { inherit (nixpkgs) nginx; };
-
+  config.service = {
     name = "nginx";
-    version = "unstable";
-
-    service = {
-      name = "nginx";
-      start = ''
-        ${config.deps.nginx}/bin/nginx \
-          -p '${cfg.stateDir}' \
-          -c '${cfg.configFile}' \
-          -e /dev/stderr
-      '';
-    };
+    description = "";
+    exec = [
+      "${cfg.package}/bin/nginx"
+      "-p"
+      "${config.service.stateDir}"
+      "-c"
+      "${cfg.configFile}"
+      "-e"
+      "/dev/stderr"
+    ];
   };
 }

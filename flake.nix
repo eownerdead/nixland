@@ -1,51 +1,52 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    utils.url = "github:numtide/flake-utils";
-    dream2nix = {
-      url = "github:nix-community/dream2nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs = { self, nixpkgs, utils, dream2nix }:
-    utils.lib.eachDefaultSystem (system:
-      let pkgs = import nixpkgs { inherit system; };
-      in rec {
-        formatter = pkgs.nixfmt;
+  outputs =
+    inputs@{ self, flake-parts, ... }:
+    let
+      inherit (inputs.nixpkgs) lib;
+    in
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [ "x86_64-linux" ];
 
-        packages = {
-          nginx-example = dream2nix.lib.evalModules {
-            packageSets.nixpkgs = pkgs;
+      flake = {
+        lib = import ./lib/default.nix { inherit lib; };
+      };
+
+      perSystem =
+        { pkgs, ... }:
+        {
+          formatter = pkgs.nixfmt-rfc-style;
+
+          legacyPackages.nginx = lib.evalModules {
             modules = [
               ./modules/services/nginx.nix
               {
-                service.backend = "oci";
+                service.stateDir = "/var/lib";
+                ociBundle.stateDir = "/home/noobuser/src/nixland/nginx";
                 services.nginx = {
-                  configFile = ./nginx.conf;
-                  stateDir = "/tmp";
+                  configFile = "${./nginx.conf}";
                 };
               }
             ];
+            specialArgs = {
+              inherit pkgs;
+              land = self.lib;
+            };
           };
-          firefox = dream2nix.lib.evalModules {
-            packageSets.nixpkgs = pkgs;
-            modules = [
-              ./modules/services/firefox.nix
-              { services.firefox.stateDir = "/home/noobuser/src/nixland"; }
+
+          devShells.default = pkgs.mkShell {
+            packages = with pkgs; [
+              editorconfig-checker
+              nixfmt-rfc-style
+              runc
+              crun
+              youki
             ];
           };
         };
-
-        apps = {
-          nginx-example = {
-            type = "app";
-            program = "${packages.nginx-example}/bin/nginx";
-          };
-        };
-
-        devShells.default = pkgs.mkShell {
-          packages = with pkgs; [ editorconfig-checker nixfmt runc crun youki ];
-        };
-      });
+    };
 }

@@ -1,25 +1,27 @@
-{ config, lib, dream2nix, ... }:
-let cfg = config.service;
-in {
-  imports = [ ../writeShellApplication.nix ./service.nix ];
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.service;
+in
+{
+  imports = [ ./service.nix ];
 
-  config = {
-    name = cfg.name;
-    version = "unstable";
+  options.out.app = lib.mkOption { type = lib.types.package; };
 
-    writeShellApplication = lib.mkIf (cfg.backend == "shellscript")
-      (with config.deps; {
-        name = cfg.name;
-        text = with lib;
-          ''
-            # ${cfg.description}
-          '' + lib.optionalString (cfg.env != null) (lib.concatStrings
-            (lib.mapAttrsToList (name: value: ''
-              ${lib.toShellVar name value}
-              export ${name}
-            '') cfg.env)) + ''
-              ${cfg.start}
-            '';
-      });
-  };
+  config.out.app = pkgs.writeScriptBin (cfg.name + "-app") (
+    ''
+      # ${cfg.description}
+    ''
+    + lib.concatStrings (
+      lib.mapAttrsToList (name: value: ''
+        ${lib.toShellVar name value}
+        export ${name}
+      '') cfg.env
+    )
+    + (lib.escapeShellArgs cfg.exec)
+  );
 }
