@@ -16,6 +16,7 @@ in
   ];
 
   options.services.nginx = with lib; {
+    enable = mkEnableOption "";
     package = mkOption {
       type = types.package;
       default = pkgs.nginx;
@@ -26,13 +27,13 @@ in
     };
   };
 
-  config.service = {
+  config = lib.mkIf cfg.enable {
     name = "nginx";
     description = "";
     exec = [
       "${cfg.package}/bin/nginx"
       "-p"
-      "${config.service.stateDir}"
+      "${config.stateDir}"
       "-c"
       "${cfg.configFile}"
       "-e"

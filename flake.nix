@@ -34,11 +34,18 @@
             ];
           };
 
-          land.services.nginx = {
-            service.stateDir = "/var/lib";
-            ociBundle.stateDir = "/home/noobuser/src/nixland/nginx";
-            services.nginx = {
-              configFile = "${./nginx.conf}";
+          land.services = {
+            dev = {
+              name = "dev";
+              bin.packages = with pkgs; [ busybox ];
+              exec = [ "${pkgs.busybox}/bin/sh" ];
+            };
+            nginx = {
+              stateDir = "/var/lib";
+              services.nginx = {
+                enable = true;
+                configFile = "${./nginx.conf}";
+              };
             };
           };
         };

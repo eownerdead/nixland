@@ -4,24 +4,21 @@
   pkgs,
   ...
 }:
-let
-  cfg = config.service;
-in
 {
   imports = [ ./service.nix ];
 
   options.out.app = lib.mkOption { type = lib.types.package; };
 
-  config.out.app = pkgs.writeScriptBin (cfg.name + "-app") (
+  config.out.app = pkgs.writeScriptBin (config.name + "-app") (
     ''
-      # ${cfg.description}
+      # ${config.description}
     ''
     + lib.concatStrings (
       lib.mapAttrsToList (name: value: ''
         ${lib.toShellVar name value}
         export ${name}
-      '') cfg.env
+      '') config.env
     )
-    + (lib.escapeShellArgs cfg.exec)
+    + (lib.escapeShellArgs config.exec)
   );
 }
