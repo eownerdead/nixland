@@ -5,17 +5,10 @@
   ...
 }:
 let
-  cfg = config.services.nginx;
+  cfg = config.nginx;
 in
 {
-  imports = [
-    ../service/shellScript.nix
-    ../service/ociBundle.nix
-    ../service/service.nix
-    # ../service/oci.nix
-  ];
-
-  options.services.nginx = with lib; {
+  options.nginx = with lib; {
     enable = mkEnableOption "";
     package = mkOption {
       type = types.package;

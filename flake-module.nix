@@ -4,9 +4,9 @@
     { pkgs, config, ... }:
     {
       options.land = {
-        services = lib.mkOption {
+        apps = lib.mkOption {
           default = { };
-          type = lib.types.attrsOf (
+          type = lib.types.lazyAttrsOf (
             lib.types.submoduleWith {
               modules = [ ./modules/top-level.nix ];
               specialArgs = {
@@ -21,7 +21,7 @@
       config.apps = lib.mapAttrs (k: v: {
         program = v.out.app;
         type = "app";
-      }) config.land.services;
+      }) config.land.apps;
     }
   );
 }

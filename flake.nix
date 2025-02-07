@@ -31,20 +31,18 @@
               runc
               crun
               youki
+              runit
             ];
           };
 
-          land.services = {
-            dev = {
-              name = "dev";
-              bin.packages = with pkgs; [ busybox ];
-              exec = [ "${pkgs.busybox}/bin/sh" ];
-            };
+          land.apps = {
             nginx = {
-              stateDir = "/var/lib";
               services.nginx = {
-                enable = true;
-                configFile = "${./nginx.conf}";
+                stateDir = "/var/lib";
+                nginx = {
+                  enable = true;
+                  configFile = "${./nginx.conf}";
+                };
               };
             };
           };
