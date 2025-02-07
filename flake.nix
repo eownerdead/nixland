@@ -5,7 +5,7 @@
   };
 
   outputs =
-    inputs@{ self, flake-parts, ... }:
+    inputs@{ flake-parts, ... }:
     let
       inherit (inputs.nixpkgs) lib;
     in
@@ -26,7 +26,6 @@
 
           devShells.default = pkgs.mkShell {
             packages = with pkgs; [
-              editorconfig-checker
               nixfmt-rfc-style
               runc
               crun
@@ -35,7 +34,7 @@
             ];
           };
 
-          land.apps = {
+          land.services = {
             nginx = {
               services.nginx = {
                 stateDir = "/var/lib";

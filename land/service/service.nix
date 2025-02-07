@@ -3,7 +3,6 @@
   imports = [ ./nginx.nix ];
 
   options = with lib; {
-    name = mkOption { type = types.str; };
     description = mkOption {
       type = types.str;
       default = "";

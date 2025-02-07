@@ -21,7 +21,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    name = "nginx";
     description = "";
     exec = [
       "${cfg.package}/bin/nginx"

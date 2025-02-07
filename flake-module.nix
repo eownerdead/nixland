@@ -2,26 +2,18 @@
 {
   options.perSystem = flake-parts-lib.mkPerSystemOption (
     { pkgs, config, ... }:
+    let
+      land = import ./land.nix { inherit pkgs; };
+    in
     {
       options.land = {
-        apps = lib.mkOption {
+        services = lib.mkOption {
           default = { };
-          type = lib.types.lazyAttrsOf (
-            lib.types.submoduleWith {
-              modules = [ ./modules/top-level.nix ];
-              specialArgs = {
-                inherit pkgs;
-                land = import ./lib/default.nix { inherit lib; };
-              };
-            }
-          );
+          type = lib.types.attrsOf land.types.services;
         };
       };
 
-      config.apps = lib.mapAttrs (k: v: {
-        program = v.out.app;
-        type = "app";
-      }) config.land.apps;
+      config.packages = lib.mapAttrs (_: v: v.runit.out.start) config.land.services;
     }
   );
 }
