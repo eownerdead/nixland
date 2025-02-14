@@ -11,18 +11,21 @@ let
         specialArgs = {
           inherit pkgs land;
         };
+        class = "tree";
       };
       service = lib.types.submoduleWith {
         modules = [ ./land/service.nix ];
         specialArgs = {
           inherit pkgs land;
         };
+        class = "service";
       };
       services = lib.types.submoduleWith {
         modules = [ ./land/services.nix ];
         specialArgs = {
           inherit pkgs land;
         };
+        class = "services";
       };
     };
   };
