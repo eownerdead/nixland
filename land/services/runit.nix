@@ -41,6 +41,7 @@
         cd "$SVDIR"
         ${config.runit.tree.scriptFile}
 
+        PATH="$PATH:${config.runit.package}/bin"
         exec ${config.runit.package}/bin/runsvdir "$SVDIR"
       '';
     };
