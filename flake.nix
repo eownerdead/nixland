@@ -35,22 +35,28 @@
           };
 
           land.services = {
-            nginx = {
-              services.nginx = rec {
-                stateDir = "/home/noobuser/src/nixland";
-                nginx = {
-                  enable = true;
-                  httpConfig = ''
-                    server {
-                      listen 8080;
-                      server_name localhost;
+            test = {
+              services = {
+                nginx = rec {
+                  stateDir = "/home/noobuser/src/nixland";
+                  nginx = {
+                    enable = true;
+                    httpConfig = ''
+                      server {
+                        listen 8080;
+                        server_name localhost;
 
-                      location / {
-                        root ${stateDir};
-                        autoindex on;
+                        location / {
+                          root ${stateDir};
+                          autoindex on;
+                        }
                       }
-                    }
-                  '';
+                    '';
+                  };
+                };
+                ollama = {
+                  stateDir = "/home/noobuser/src/nixland/ollama";
+                  ollama.enable = true;
                 };
               };
             };

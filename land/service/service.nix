@@ -1,6 +1,9 @@
 { lib, ... }:
 {
-  imports = [ ./nginx.nix ];
+  imports = [
+    ./nginx.nix
+    ./ollama.nix
+  ];
 
   options = with lib; {
     description = mkOption {
