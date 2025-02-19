@@ -36,11 +36,21 @@
 
           land.services = {
             nginx = {
-              services.nginx = {
-                stateDir = "/var/lib";
+              services.nginx = rec {
+                stateDir = "/home/noobuser/src/nixland";
                 nginx = {
                   enable = true;
-                  configFile = "${./nginx.conf}";
+                  httpConfig = ''
+                    server {
+                      listen 8080;
+                      server_name localhost;
+
+                      location / {
+                        root ${stateDir};
+                        autoindex on;
+                      }
+                    }
+                  '';
                 };
               };
             };
