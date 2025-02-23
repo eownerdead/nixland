@@ -13,7 +13,7 @@
         };
       };
 
-      config.packages = lib.mapAttrs (_: v: v.runit.out.start) config.land.services;
+      config.packages = lib.mapAttrs (_: v: v.systemd.out.switch) config.land.services;
     }
   );
 }

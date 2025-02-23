@@ -12,6 +12,8 @@
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [ ./flake-module.nix ];
 
+      debug = true;
+
       systems = [ "x86_64-linux" ];
 
       flake = {
@@ -33,6 +35,8 @@
               runit
             ];
           };
+
+          legacyPackages = import ./land.nix { inherit pkgs; };
 
           land.services = {
             test = {

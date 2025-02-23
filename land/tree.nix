@@ -3,6 +3,7 @@
   lib,
   config,
   pkgs,
+  land,
   ...
 }:
 let
@@ -39,6 +40,7 @@ let
       type = with lib.types; listOf str;
       generate = name: cmd: writeExecuting (args // { inherit name cmd; });
     };
+    systemd = { }: pkgs.formats.systemd;
   }; # // pkgs.formats;
 in
 {
@@ -88,10 +90,7 @@ in
         )
       );
     };
-    script = lib.mkOption {
-      type = lib.types.str;
-    };
-    scriptFile = lib.mkOption {
+    filesScript = lib.mkOption {
       type = lib.types.path;
     };
     out = lib.mkOption {
@@ -100,17 +99,13 @@ in
   };
 
   config = {
-    script =
+    filesScript =
       let
-        deployScript = k: v: ''
-          echo "Creating ${k}"
-          mkdir -p "${builtins.dirOf k}"
-          ln -sf "${v.file}" "${k}"
-        '';
+        f = k: v: ''f "${v.file}" "${k}"'';
       in
-      lib.concatStringsSep "\n\n" (lib.mapAttrsToList deployScript config.tree);
-
-    scriptFile = pkgs.writeScript "deploy-${config.name}" config.script;
+      pkgs.writeText "${config.name}-files.sh" (
+        lib.concatStringsSep "\n" (lib.mapAttrsToList f config.tree)
+      );
 
     out =
       pkgs.runCommand config.name
@@ -118,9 +113,10 @@ in
           preferLocalBuild = true;
         }
         ''
-          mkdir $out
-          cd $out
-          ${config.scriptFile}
+          mkdir "$out"
+          cd "$out"
+
+          ${land.deployFiles}/bin/deploy "${config.filesScript}"
         '';
   };
 }

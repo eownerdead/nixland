@@ -25,7 +25,7 @@
   config = {
     runit = {
       tree = {
-        name = name;
+        name = "${name}-runit";
         tree = lib.attrsets.mapAttrs' (
           k: v:
           lib.nameValuePair "${k}/run" {
